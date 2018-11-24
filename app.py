@@ -14,7 +14,7 @@ from tornado.log import app_log
 from tornado.options import define, options, parse_command_line
 from tornado.web import Application, RequestHandler
 
-define("port", default=8050, type=int, help="server listen port")
+define("port", default=8999, type=int, help="server listen port")
 define("debug", default=True, type=bool, help="server run mode")
 parse_command_line()
 

@@ -1,5 +1,6 @@
 .idea
 .DS_Store
+.vscode
 
 node_modules
 dist/
@@ -8,6 +9,7 @@ pip-log.txt
 
 *.lock
 *.log
+*.pyc
 
 local_settings.py
 
