@@ -1,5 +1,5 @@
 # coding=utf-8
-__author__ = 'defence.zhang@gamil.com'
+__author__ = 'defence.zhang@gmail.com'
 __date__ = "2018/11/20 下午9:38:00"
 
 import sys
@@ -14,11 +14,18 @@ from tornado.log import app_log
 from tornado.options import define, options, parse_command_line
 from tornado.web import Application, RequestHandler
 
+from motor.motor_tornado import MotorClient
+
 define("port", default=8999, type=int, help="server listen port")
 define("debug", default=True, type=bool, help="server run mode")
 parse_command_line()
 
-from www import wx
+try:
+    from py import config
+except ImportError:
+    from py import local_settings as config
+
+from py import wx, admin
 
 
 class IndexHandler(RequestHandler):
@@ -38,12 +45,15 @@ def main():
     handlers = [
         (r'/', IndexHandler),
         (r'/wx/cj.html', wx.ChouJiangHandler),
-        (r'/wx/post.json', wx.PostAddressHandler)
-
+        (r'/wx/post.json', wx.PostAddressHandler),
+        (r'/admin', admin.ActivityHandler),
     ]
 
     application = Application(handlers, **settings)
-    application.listen(options.port, xheaders=True)
+    # Forks one process per CPU.
+    application.listen(options.port, xheaders=True) # .start(0)
+    # Now, in each child process, create a MotorClient.
+    application.settings['db'] = MotorClient(config.mongodb).cj
     app_log.warning("waqu live start at port: %s" % options.port)
     IOLoop.instance().start()
 
