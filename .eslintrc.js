@@ -17,6 +17,6 @@ module.exports = {
         'max-len': [1, { code: 240, ignoreUrls: true }],
         'no-console': 0,
         quotes: [2, 'single', { avoidEscape: true, allowTemplateLiterals: true }],
-        'react/jsx-max-props-per-line': [1, { maximun: 10, when: 'multiline' }]
+        'react/jsx-max-props-per-line': [1, { maximum: 10, when: 'multiline' }]
     }
 };
