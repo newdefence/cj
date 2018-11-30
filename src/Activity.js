@@ -18,10 +18,11 @@ class J2 extends Component {
     }
 
     render() {
-        const { j2 } = this.props;
-        const { getFieldDecorator } = this.props.form;
-        const formItemLayout = { labelCol: 6, wrapperCol: 18 };
-        return (<Modal title='新建活动信息' destroyOnClose visible={j2.visible} onOk={this.save} onCancel={() => {
+        const { props } = this;
+        const { j2, form } = props;
+        const { getFieldDecorator } = form;
+        const formItemLayout = { labelCol: { span: 6 }, wrapperCol: { span: 18 } };
+        return (<Modal title='新建活动信息' destroyOnClose visible={props.visible} onOk={this.save} onCancel={() => {
             console.log('cancel');
             // this.setState({ j2: null });
         }}>
@@ -80,6 +81,8 @@ class J2 extends Component {
     }
 }
 
+const J2From = Form.create()(J2);
+
 class Activity extends Component {
     constructor(props) {
         super(props);
@@ -98,9 +101,9 @@ class Activity extends Component {
         return (
             <>
                 <Button onClick={() => {
-                    this.setState({ j2: { visible: true } });
+                    this.setState({ j2: { visible: true, data: {} } });
                 }}>新建</Button>
-                <Table key='_id' columns={[
+                <Table rowKey={(row) => row._id.$oid} columns={[
                     { title: '活动名称', dataIndex: 'name' },
                     { title: '红包类型', dataIndex: 'type', render: type => ({ random: '随机金额', static: '固定金额', goods: '实物红包' }[type]) },
                     { title: '总个数', dataIndex: 'total' },
@@ -110,7 +113,9 @@ class Activity extends Component {
                     { title: '活动时间', key: 'startEndTime', render: (_, row) => row.startTime },
                     { title: '创建时间', key: 'createTime', render: createTime => createTime },
                 ]} dataSource={j1.data} />
-                {j2 ? Form.create(J2) : null}
+                {j2 ? <J2From visible={j2.visible} data={j2.data} onSuccess={() => {
+                    this.setState({ j2: { ...j2, visible: false } });
+                }}/> : null}
             </>
         );
     }

@@ -13,7 +13,7 @@ from bson.json_util import dumps, loads
 
 class AuthBaseHandler(RequestHandler):
     bson = None
-    start = 0
+    offset = 0
     size = 20
     keyword = None
 
@@ -30,7 +30,9 @@ class AuthBaseHandler(RequestHandler):
             if size and size != '20' and size.isdigit():
                 self.size = int(size)
             if start and start.isdigit():
-                self.start = (int(start) - 1) * self.size
+                start = int(start)
+                if start > 1:
+                    self.offset = (start - 1) * self.size
         elif self.request.body and self.request.headers.get("Content-Type", "").lower().find("application/json") == 0:
             self.bson = loads(self.request.body)
 
@@ -48,10 +50,10 @@ class ActivityHandler(AuthBaseHandler):
     @authenticated
     def get(self, *args, **kwargs):
         # 1. fuck.... 不知道从哪个版本开始 count 函数删除了，汗，，，
-        total = yield self.db.activity.count_documents({})
+        total = yield self.db.activity.count_documents({}) # estimated_document_count
         cursor = self.db.activity.find()
-        if self.start:
-            cursor.skip(self.start)
+        if self.offset:
+            cursor.skip(self.offset)
         cursor.limit(self.size)
         data = yield cursor.to_list(length=None)
         self.finish_bson(total = total, data = data)
