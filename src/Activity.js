@@ -5,31 +5,38 @@ import { Button, DatePicker, Form, Input, InputNumber, Modal, Radio, Table } fro
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
+const { TextArea } = Input;
 
 class J2 extends Component {
-    save = () => {
+    onOk = () => {
         // e.preventDefault();
         this.props.form.validateFields((err, values) => {
-            console.log('err:', err);
+            console.log('onOk: err, values =>', err, values);
             if (!err) {
-                console.log('values:', values);
+                this.props.onOk(values);
             }
         });
     }
 
+    onCancel = () => {
+        console.log('onCancel')
+        this.props.onCancel();
+    }
+
+    onSubmit = (e) => {
+        e.preventDefault();
+        this.onOk();
+    }
+
     render() {
         const { props } = this;
-        const { j2, form } = props;
-        const { getFieldDecorator } = form;
+        const { form } = props;
+        const { getFieldDecorator, getFieldValue } = form;
         const formItemLayout = { labelCol: { span: 6 }, wrapperCol: { span: 18 } };
-        return (<Modal title='新建活动信息' destroyOnClose visible={props.visible} onOk={this.save} onCancel={() => {
-            console.log('cancel');
-            // this.setState({ j2: null });
-        }}>
-            <Form onSubmit={(e) => {
-                e.preventDefault();
-                this.save();
-            }}>
+        const total = getFieldValue('total');
+        const cost = getFieldValue('cost');
+        return (<Modal title='新建活动信息' destroyOnClose visible={props.visible} onOk={this.onOk} onCancel={this.onCancel}>
+            <Form onSubmit={this.onSubmit}>
                 <FormItem {...formItemLayout} label='活动名称'>
                     {
                         getFieldDecorator('name', {
@@ -37,10 +44,17 @@ class J2 extends Component {
                         })(<Input placeholder='请填写抽奖活动名称' />)
                     }
                 </FormItem>
+                <FormItem {...formItemLayout} label='红包总成本'>
+                    {
+                        getFieldDecorator('cost', {
+                            rules: [{ required: true, type: 'number', min: 0, message: '请设置红包总成本：≥ 0' }],
+                        })(<InputNumber />)
+                    }
+                </FormItem>
                 <FormItem {...formItemLayout} label='活动红包类型'>
                     {
                         getFieldDecorator('type', {
-                            initialValue: 'random',
+                            rules: [{ required: true, message: '请设置红包类型' }],
                         })(<RadioGroup>
                             <Radio value='random'>随机金额红包</Radio>
                             <Radio value='static'>固定金额红包</Radio>
@@ -52,16 +66,91 @@ class J2 extends Component {
                     {
                         getFieldDecorator('total', {
                             rules: [{ required: true, type: 'integer', min: 0, message: '请设置红包总个数：≥ 0' }],
-                        })(<InputNumber />)
+                        })(<InputNumber placeholder='总个数' />)
                     }
                 </FormItem>
-                <FormItem {...formItemLayout} label='红包总成本'>
-                    {
-                        getFieldDecorator('cost', {
-                            rules: [{ required: true, type: 'number', min: 0, message: '请设置红包总成本：≥ 0' }],
-                        })(<InputNumber />)
-                    }
-                </FormItem>
+                {
+                    getFieldValue('type') === 'random' ? <FormItem {...formItemLayout} label='随机浮动范围'>
+                        {
+                            getFieldDecorator('config', {
+                                rules: [ { type: 'number', min: 0, message: '请设置正确的浮动范围' } ],
+                            })(<InputNumber placeholder={(cost && total) ? `± ${(cost/total).toFixed(2)}` : ''} />)
+                        }
+                    </FormItem> : null
+                }
+                {
+                    getFieldValue('type') === 'static' ? <FormItem {...formItemLayout} label='红包金额配置'>
+                        {
+                            getFieldDecorator('config', {
+                                rules: [
+                                    {
+                                        validator(rule, value, callback) {
+                                            if (value) {
+                                                const lines = value.split(/\r?\n/);
+                                                const errors = lines.map((line, idx) => {
+                                                    line = line.trim();
+                                                    if (line) {
+                                                        // 只做简单的格式校验，不对数据的合法性做校验（大小，正负，小数等）
+                                                        if (/^\d+(:|：)\d+$/.test(line)) {
+                                                            return 0;
+                                                        } else {
+                                                            return `第 ${idx + 1} 行配置格式错误`;
+                                                        }
+                                                    } else {
+                                                        return `第 ${idx + 1} 行配置不能为空`;
+                                                    }
+                                                }).filter(Boolean);
+                                                if (errors.length) {
+                                                    callback(errors[0]);
+                                                }
+                                            } else {
+                                                callback('请填写配置');
+                                            }
+                                        },
+                                    },
+                                ],
+                            })(<TextArea rows={4} placeholder={
+                                ['每行格式：个数:金额，多个配置多行填写', '例如4个3元和5个1元配置格式如下：', '4:3', '5:1'].join('\n')
+                            } />)
+                        }
+                    </FormItem> : null
+                }
+                {
+                    getFieldValue('type') === 'goods' ? <FormItem {...formItemLayout} label='实物配置'>
+                        {
+                            getFieldDecorator('config', {
+                                rules: [
+                                    {
+                                        validator(rule, value, callback) {
+                                            if (value) {
+                                                const lines = value.split(/\r?\n/);
+                                                const errors = lines.map((line, idx) => {
+                                                    line = line.trim();
+                                                    if (line) {
+                                                        if (/^\d+(:|：)/.test(line)){
+                                                            return 0;
+                                                        } else {
+                                                            return `第 ${idx + 1} 行配置格式错误`;
+                                                        }
+                                                    } else {
+                                                        return `第 ${idx + 1} 行不能为空`;
+                                                    }
+                                                }).filter(Boolean);
+                                                if (errors.length) {
+                                                    callback(errors[0]);
+                                                }
+                                            } else {
+                                                callback('请配置实物');
+                                            }
+                                        },
+                                    },
+                                ],
+                            })(<TextArea rows={4} placeholder={
+                                ['每行格式：个数:货物名称，多个配置多行填写', '例如5个热水瓶和3个电风扇配置格式如下：', '5:热水瓶', '3:电风扇'].join('\n')
+                            }/>)
+                        }
+                    </FormItem> : null
+                }
                 <FormItem {...formItemLayout} label='活动开始时间'>
                     {
                         getFieldDecorator('startTime', {
@@ -96,6 +185,21 @@ class Activity extends Component {
             this.setState({ j1: { ...this.state.j1, ...json } });
         });
     }
+
+    saveJ2 = (j2Config) => {
+        const { j2 } = this.state;
+        console.log('TODO: save j2', j2Config, j2);
+        this.closeJ2();
+    }
+
+    closeJ2 = () => {
+        const { j2 } = this.state;
+        this.setState({ j2: { ...j2, visible: false } });
+        setTimeout(() => {
+            this.setState({ j2: null });
+        }, 600);
+    }
+
     render() {
         const { j1, j2 } = this.state;
         return (
@@ -113,9 +217,7 @@ class Activity extends Component {
                     { title: '活动时间', key: 'startEndTime', render: (_, row) => row.startTime },
                     { title: '创建时间', key: 'createTime', render: createTime => createTime },
                 ]} dataSource={j1.data} />
-                {j2 ? <J2From visible={j2.visible} data={j2.data} onSuccess={() => {
-                    this.setState({ j2: { ...j2, visible: false } });
-                }}/> : null}
+                {j2 ? <J2From visible={j2.visible} data={j2.data} onOk={this.saveJ2} onCancel={this.closeJ2}/> : null}
             </>
         );
     }

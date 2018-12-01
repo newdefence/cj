@@ -63,7 +63,7 @@ class ActivityHandler(AuthBaseHandler):
     def post(self):
         '''设置红包活动信息
         total: 总个数, checked: 已兑金额, checkedCost: 已兑个数
-        1. 随机红包: { type: random, count: 总个数, cost: 总价值, randomRange: 随机浮动范围 }
+        1. 随机红包: { type: random, count: 总个数, cost: 总价值, range: 随机浮动范围 }
         2. 固定金额红包: { type: static, count: 总个数, cost: 总价值, config: [{ value: 1, count: 10 }, { value:2, count: 3 }] },
         3. 实物奖励: { type: goods, count, cost, config: [{ value, name, count }, ...]
         '''
