@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Button, DatePicker, Form, Input, InputNumber, Modal, Radio, Table } from 'antd';
 
-import { dayStartTime, dayEndTime } from './common';
+import { dayStartTime, dayEndTime, renderDate, renderDateTime } from './common';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -20,13 +20,13 @@ class J2 extends Component {
                         if (colonIndex < 0) {
                             colonIndex = line.indexOf('：');
                         }
-                        return { count: +line.substr(0, colonIndex), name: line.substr(colonIndex + 1) }
+                        return { count: +line.substr(0, colonIndex), value: line.substr(colonIndex + 1) }
                     }),
                     static: lines => lines.split(/r?\n/).map(line => {
                         const [count, value] = line.split(/:|：/);
                         return { count: +count, value: +value };
                     }),
-                    random: range => ({ range }),
+                    random: count => ({ count }),
                 }
                 this.props.onOk({
                     ...values,
@@ -48,8 +48,8 @@ class J2 extends Component {
         const { form } = props;
         const { getFieldDecorator, getFieldValue } = form;
         const formItemLayout = { labelCol: { span: 6 }, wrapperCol: { span: 18 } };
-        const total = getFieldValue('total');
-        const cost = getFieldValue('cost');
+        // const total = getFieldValue('total');
+        // const cost = getFieldValue('cost');
         return (<Modal title='新建活动信息' destroyOnClose visible={props.visible} confirmLoading={props.confirmLoading}
             onOk={this.onOk} onCancel={props.onCancel}>
             <Form onSubmit={this.onSubmit}>
@@ -78,19 +78,19 @@ class J2 extends Component {
                         </RadioGroup>)
                     }
                 </FormItem>
-                <FormItem {...formItemLayout} label='红包总个数'>
+                <FormItem {...formItemLayout} label='二维码数量'>
                     {
                         getFieldDecorator('total', {
-                            rules: [{ required: true, type: 'integer', min: 0, message: '请设置红包总个数：≥ 0' }],
-                        })(<InputNumber placeholder='总个数' />)
+                            rules: [{ required: true, type: 'integer', min: 0, message: '请设置二维码数量：≥ 0' }],
+                        })(<InputNumber placeholder='二维码总数' />)
                     }
                 </FormItem>
                 {
-                    getFieldValue('type') === 'random' ? <FormItem {...formItemLayout} label='随机浮动范围'>
+                    getFieldValue('type') === 'random' ? <FormItem {...formItemLayout} label='红包总数'>
                         {
                             getFieldDecorator('config', {
-                                rules: [ { type: 'number', min: 0, message: '请设置正确的浮动范围' } ],
-                            })(<InputNumber placeholder={(cost && total) ? `± ${(cost/total).toFixed(2)}` : ''} />)
+                                rules: [ { type: 'integer', required: true, min: 1, message: '请填写红包个数' } ],
+                            })(<InputNumber placeholder='红包个数' />)
                         }
                     </FormItem> : null
                 }
@@ -108,7 +108,7 @@ class J2 extends Component {
                                                     line = line.trim();
                                                     if (line) {
                                                         // 只做简单的格式校验，不对数据的合法性做校验（大小，正负，小数等）
-                                                        if (/^\d+(:|：)\d+$/.test(line)) {
+                                                        if (/^\d+(:|：)\d+(\.\d+)?$/.test(line)) {
                                                             return 0;
                                                         } else {
                                                             return `第 ${idx + 1} 行配置格式错误`;
@@ -194,6 +194,8 @@ class J2 extends Component {
 
 const J2From = Form.create()(J2);
 
+const ACTIVITY_TYPES = { random: '随机金额', static: '固定金额', goods: '实物红包' };
+
 class Activity extends Component {
     constructor(props) {
         super(props);
@@ -243,18 +245,20 @@ class Activity extends Component {
         const { j1, j2 } = this.state;
         return (
             <>
-                <Button onClick={() => {
-                    this.setState({ j2: { visible: true, confirmLoading: false } });
-                }}>新建</Button>
+                <div className='ant-row'>
+                    <Button type='primary' style={{ float: 'right' }} onClick={() => {
+                        this.setState({ j2: { visible: true, confirmLoading: false } });
+                    }}>新建</Button>
+                </div>
                 <Table rowKey={(row) => row._id.$oid} columns={[
                     { title: '活动名称', dataIndex: 'name' },
-                    { title: '红包类型', dataIndex: 'type', render: type => ({ random: '随机金额', static: '固定金额', goods: '实物红包' }[type]) },
+                    { title: '红包类型', dataIndex: 'type', render: type => ACTIVITY_TYPES[type] },
                     { title: '总个数', dataIndex: 'total' },
                     { title: '总成本', dataIndex: 'cost' },
                     { title: '已兑个数', dataIndex: 'checked' },
                     { title: '已兑金额', dataIndex: 'checkedCost' },
-                    { title: '活动时间', key: 'startEndTime', render: (_, row) => row.startTime },
-                    { title: '创建时间', key: 'createTime', render: createTime => createTime },
+                    { title: '活动时间', key: 'startEndTime', render: (_, row) => `${renderDate(row.startTime)} ~ ${renderDate(row.endTime)}` },
+                    { title: '创建时间', dataIndex: 'createTime', render: ts => renderDateTime(ts) },
                 ]} dataSource={j1.data} />
                 {j2 ? <J2From {...j2} onOk={this.saveJ2} onCancel={this.closeJ2}/> : null}
             </>
