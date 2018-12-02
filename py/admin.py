@@ -14,9 +14,9 @@ import pymongo
 import qrcode
 
 try:
-    import config
+    import settings_online as config
 except ImportError:
-    import local_settings as config
+    import settings_local as config
 
 import crypt
 

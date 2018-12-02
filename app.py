@@ -21,16 +21,17 @@ define("debug", default=True, type=bool, help="server run mode")
 parse_command_line()
 
 try:
-    from py import config
+    from py import settings_online as config
 except ImportError:
-    from py import local_settings as config
+    from py import settings_local as config
 
 from py import wx, admin
 
 
 class IndexHandler(RequestHandler):
     def get(self):
-        self.finish('Welcome !!!')
+        # TODO: cp build/index.html ==> templates/admin/index.html
+        self.render('admin/index.html')
 
 
 def main():
@@ -43,7 +44,7 @@ def main():
         autoescape=None
     )
     handlers = [
-        (r'/', IndexHandler),
+        (r'/admin', IndexHandler),
         (r'/wx/cj.html', wx.QrCodeHandler),
         (r'/qrcode/(\w+)/(\w+)', wx.QrCodeHandler),
         (r'/wx/post.json', wx.PostAddressHandler),
