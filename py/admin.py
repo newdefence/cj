@@ -4,18 +4,43 @@ __date__ = "2018/11/20 下午9:50:00"
 
 from datetime import datetime
 
-from tornado.web import authenticated, RequestHandler
+from tornado.web import authenticated, RequestHandler, HTTPError
 from tornado.gen import coroutine
 
 from bson.json_util import dumps, loads
 
 # TODO： 有时间需要做 json_schema 验证
 
+UID = 'uid'
+
+class LoginHandler(RequestHandler):
+    def check_xsrf_cookie(self):
+        pass
+
+    def get(self):
+        if self.application.settings['debug']:
+            self.set_secure_cookie(UID, 'TEST_USER')
+            self.finish({ 'success': True, 'msg': '登录成功' })
+        else:
+            raise HTTPError(404)
+
+    def post(self):
+        user = loads(self.request.body)
+        self.set_secure_cookie(UID, user['name'])
+        self.finish({ 'success': True, 'msg': '登录成功' })
+
+    def put(self):
+        self.clear_cookie(UID)
+        self.finish({ 'success': True, 'msg': '退出成功' })
+
 class AuthBaseHandler(RequestHandler):
     bson = None
     offset = 0
     size = 20
     keyword = None
+
+    def check_xsrf_cookie(self):
+        pass
 
     @property
     def db(self):
@@ -63,7 +88,7 @@ class ActivityHandler(AuthBaseHandler):
     def post(self):
         '''设置红包活动信息
         total: 总个数, checked: 已兑金额, checkedCost: 已兑个数
-        1. 随机红包: { type: random, count: 总个数, cost: 总价值, range: 随机浮动范围 }
+        1. 随机红包: { type: random, count: 总个数, cost: 总价值, config: { range: 随机浮动范围 } }
         2. 固定金额红包: { type: static, count: 总个数, cost: 总价值, config: [{ value: 1, count: 10 }, { value:2, count: 3 }] },
         3. 实物奖励: { type: goods, count, cost, config: [{ value, name, count }, ...]
         '''

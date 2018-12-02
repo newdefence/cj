@@ -47,6 +47,7 @@ def main():
         (r'/wx/cj.html', wx.ChouJiangHandler),
         (r'/wx/post.json', wx.PostAddressHandler),
         (r'/admin/activity', admin.ActivityHandler),
+        (r'/admin/login', admin.LoginHandler),
     ]
 
     application = Application(handlers, **settings)
