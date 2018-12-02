@@ -44,9 +44,12 @@ def main():
     )
     handlers = [
         (r'/', IndexHandler),
-        (r'/wx/cj.html', wx.ChouJiangHandler),
+        (r'/wx/cj.html', wx.QrCodeHandler),
+        (r'/qrcode/(\w+)/(\w+)', wx.QrCodeHandler),
         (r'/wx/post.json', wx.PostAddressHandler),
         (r'/admin/activity', admin.ActivityHandler),
+        (r'/admin/qrcode/(\w+)', admin.QrCodePageHandler), # 二维码图像列表页面
+        (r'/admin/qrcode/(\w+)/(\w+)', admin.QRCodeHander), # GET 单个二维码图像, id, seq, salt
         (r'/admin/login', admin.LoginHandler),
     ]
 

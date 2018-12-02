@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>查看二维码</title>
+    <link rel="stylesheet" href="/static/antd/antd.min.css">
+    <style>
+        .qrcodes a { float: left; width: 18%; margin: 12px 1% 0; }
+        .qrcodes img { width: 100%; }
+    </style>
+</head>
+<body>
+<div style="width: 80%; min-width: 750px; margin: 0 auto;">
+    <h1>{{ activity['name'] }}</h1>
+    <div>二维码个数：{{ activity['total'] }}，红包个数：{{ activity['count'] }}，总价值：{{ activity['cost'] }}</div>
+</div>
+<div class="qrcodes">
+    {% for c in codes %}
+    <a href="{{ c['img'] }}" target="_blank">
+        <img src="{{ c['img'] }}"/>
+        <div style="height: 30px; line-height: 16px;">
+            {% if c.get('checkTime') %}
+            {{ c.get('checkTime').strftime('%y-%m-%d %H:%M:%S') }}
+            {% else %}
+            尚未扫描
+            {% end %}
+        </div>
+    </a>
+    {% end %}
+</div>
+{% if pages %}
+<ul class="ant-pagination ant-table-pagination">
+    {% for p in pages %}
+    <li class="ant-pagination-item {{ 'ant-pagination-item-active' if (p * handler.size == handler.offset) else '' }}">
+        <a href="?current={{ p + 1 }}&size={{ handler.size }}">{{ p + 1 }}</a>
+    </li>
+    {% end %}
+</ul>
+{% end %}
+</body>
+</html>

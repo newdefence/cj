@@ -1,22 +1,27 @@
 # coding=utf-8
 
 from datetime import datetime
-import hashlib
+import math
 import random
 
 from tornado.web import authenticated, RequestHandler, HTTPError
 from tornado.gen import coroutine
 
+from bson import ObjectId
 from bson.json_util import dumps, loads
+import pymongo
+
+import qrcode
 
 try:
     import config
 except ImportError:
     import local_settings as config
 
+import crypt
+
 __author__ = 'defence.zhang@gmail.com'
 __date__ = "2018/11/20 下午9:50:00"
-
 
 # TODO： 有时间需要做 json_schema 验证
 
@@ -29,6 +34,7 @@ def base62(num):
     if num < 62:
         return BASE62[num]
     return base62(num / 62) + BASE62[num % 62]
+
 
 # BASE8 = '01234567'
 # def base8(num):
@@ -65,6 +71,7 @@ class LoginHandler(RequestHandler):
         self.clear_cookie(UID_KEY)
         self.finish({'success': True, 'msg': '退出成功'})
 
+
 class AuthBaseHandler(RequestHandler):
     bson = None
     offset = 0
@@ -83,13 +90,11 @@ class AuthBaseHandler(RequestHandler):
 
     def prepare(self):
         if self.request.method == 'GET':
-            start, size, self.keyword = [self.get_query_argument(key, None) for key in ("start", "size", "keyword")]
+            start, size, self.keyword = [self.get_query_argument(key, None) for key in ("current", "size", "keyword")]
             if size and size != '20' and size.isdigit():
                 self.size = int(size)
-            if start and start.isdigit():
-                start = int(start)
-                if start > 1:
-                    self.offset = (start - 1) * self.size
+            if start and start != '1' and start.isdigit():
+                self.offset = (int(start) - 1) * self.size
         elif self.request.body and self.request.headers.get("Content-Type", "").lower().find("application/json") == 0:
             self.bson = loads(self.request.body)
 
@@ -101,6 +106,7 @@ class AuthBaseHandler(RequestHandler):
 
     def finish_bson(self, success=True, **kwargs):
         self.finish(dict(success=success, **kwargs))
+
 
 class ActivityHandler(AuthBaseHandler):
     @coroutine
@@ -125,7 +131,7 @@ class ActivityHandler(AuthBaseHandler):
         2. 固定金额红包: { type: static, count: 总个数, cost: 总价值, config: [{ value: 1, count: 10 }, { value:2, count: 3 }] },
         3. 实物奖励: { type: goods, count, cost, config: [{ value, name, count }, ...]
         """
-        activity = self.bson
+        activity, user = self.bson, self.current_user
         cost, _type, _config = activity['cost'], activity['type'], activity['config']
         if _type not in ('random', 'static', 'goods'):
             raise HTTPError(401)
@@ -159,33 +165,51 @@ class ActivityHandler(AuthBaseHandler):
                 seq += kv['count']
         else:
             raise HTTPError(401)
-        activity.update(createTime=datetime.now(), createUser=self.current_user)
+        really_count = len(patch)
+        activity.update(createTime=datetime.now(), createUser=user, count=really_count, checkCount=0, checkCost=0)
         result = yield self.db.activity.insert_one(activity)
         activity_id = result.inserted_id
         for p in patch:
-            p.update(activity=activity_id, createTime=now)
+            p.update(activity=activity_id, createTime=now, createUser=user, startTime=activity['startTime'], endTime=activity['endTime'])
+        if really_count < activity['total']:
+            patch += [dict(type=_type, seq=seq + really_count, value=0, activity=activity_id, createTime=now, createUser=user,
+                           startTime=activity['startTime'],  endTime=activity['endTime']) for seq in range(really_count, activity['total'])]
         result = yield self.db.package.insert_many(patch, False)
         self.finish_bson(_id=activity_id, patch=result.inserted_ids, msg='红包活动创建成功')
 
-class QRCodeHander(AuthBaseHandler):
+
+class QrCodePageHandler(AuthBaseHandler):
+    @coroutine
     @authenticated
-    def get(self):
+    def get(self, activity_id):
+        activity = yield self.db.activity.find_one({'_id': ObjectId(activity_id)})
+        if not activity:
+            raise HTTPError(401)
+        total, offset, size = activity['total'], self.offset, self.size
+        cursor = self.db.package.find({ 'activity': activity['_id'] }).sort('_id', pymongo.ASCENDING)
+        if offset:
+            cursor.skip(offset)
+        cursor.limit(size)
+        codes = yield cursor.to_list(length=None)
+        for c in codes:
+            c['img'] = '/admin/qrcode/%s/%s' % (c['_id'], crypt.qrcode_md5(c))
+        if total > size:
+            pages = range(0, int(math.ceil(total / size)))
+        else:
+            pages = None
+        self.render('admin/qrcode.html', activity=activity, codes=codes, pages=pages)
+        # self.finish({'success': True, 'msg': '获取二维码列表成功', 'urls': urls})
+
+
+class QRCodeHander(AuthBaseHandler):
+    # @coroutine
+    # @authenticated
+    def get(self, package_id, salt):
         """
         /admin/qrcode 返回数据列表 { urls: [ '', '', '', '' ] }
         /admin/qrcode/activity/seq 返回二维码图片，二维码地址：http://host/qrcode/activity/seq/secret
         """
-        seq, activity = self.get_query_argument('seq'), self.get_query_argument('activity')
-        m = hashlib.md5()
-        m.update('TODO')
-        token = m.hexdigest()
         self.set_header("Content-Type", "image/png")
-        import qrcode
-        img = qrcode.make("http://%s/qrcode/%s/%s/%s" % (config.QrCodeHost, activity, seq, ''))
+        img = qrcode.make("http://%s/qrcode/%s/%s" % (config.QrCodeHost, package_id, salt))
         img.save(self, "png")
         self.finish()
-
-    @authenticated
-    @coroutine
-    def post(self, *args, **kwargs):
-        activity = self.get_query_argument('activity')
-        cursor = self.db.packet

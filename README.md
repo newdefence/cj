@@ -30,6 +30,7 @@ mongo --port 28015
 mongo --host mongodb0.example.com --port 28015
 mongo --username alice --password --authenticationDatabase admin --host mongodb0.examples.com --port 28015
 mongo mongodb://mongodb0.example.com:28015
+mongo "mongodb://cluster0-shard-00-00-host:27017,cluster0-shard-00-01-host:27017,cluster0-shard-00-02-host:27017/test?replicaSet=Cluster0-shard-0" --ssl --authenticationDatabase admin --username name --password <PASSWORD>
 ```
 
 # mongo-express

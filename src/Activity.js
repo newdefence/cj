@@ -257,6 +257,7 @@ class Activity extends Component {
                     { title: '总成本', dataIndex: 'cost' },
                     { title: '已兑个数', dataIndex: 'checked' },
                     { title: '已兑金额', dataIndex: 'checkedCost' },
+                    { title: '创建时间', dataIndex: '_id', render: _id => <a target='_blank' href={`/admin/qrcode/${_id.$oid}`}>查看二维码</a> },
                     { title: '活动时间', key: 'startEndTime', render: (_, row) => `${renderDate(row.startTime)} ~ ${renderDate(row.endTime)}` },
                     { title: '创建时间', dataIndex: 'createTime', render: ts => renderDateTime(ts) },
                 ]} dataSource={j1.data} />

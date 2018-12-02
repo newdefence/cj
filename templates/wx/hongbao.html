@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
         <meta name="format-detection" content="telephone=no" />
-        <title>红包中奖</title>
+        <title>{{ '红包中奖' if package['value'] else '谢谢参与' }}</title>
         <link rel="stylesheet" href="/static/wx/wx.css" />
     </head>
     <body>
@@ -13,9 +13,13 @@
             <div class="main">
                 <img src="/static/wx/red_banner.png" alt="扫码送红包" style="width: 100%;" />
                 <div class="hb">
+                    {% if package['value'] %}
                     <h3>幸运奖</h3>
-                    <h1>0.01 元</h1>
+                    <h1>{{ package['value'] }} 元</h1>
                     <a href="javascript:">立即领取</a>
+                    {% else %}
+                    <h3>谢谢参与</h3>
+                    {% end %}
                 </div>
                 <div class="rules">
                     <h3>活动说明</h3>
