@@ -2,11 +2,12 @@
 瞎折腾
 
 1. install [Python](https://www.python.org/downloads/), [pip](https://pip.pypa.io/en/stable/installing/), [MongoDB](https://www.mongodb.com/download-center/community).
-2. install library: [tornado](http://www.tornadoweb.org/en/stable/index.html), [motor](https://motor.readthedocs.io/en/stable/index.html)
+2. install library: [tornado](http://www.tornadoweb.org/en/stable/index.html), [motor](https://motor.readthedocs.io/en/stable/index.html), [qrcode](https://pypi.org/project/qrcode/)
 
 ```sh
 pip install tornado
 pip install motor
+pip install qrcode[pil]
 ```
 
 3. [mongodb-express](https://www.npmjs.com/package/mongo-express)
