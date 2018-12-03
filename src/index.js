@@ -1,9 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { LocaleProvider, Layout, Menu, Icon } from 'antd';
-import zh_CN from 'antd/lib/locale-provider/zh_CN';
-import 'moment/locale/zh-cn';
+import zh_CN from 'antd_locale-provider_zh-cn';
 import App from './Activity';
+
+if(process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line
+    require('moment/locale/zh-cn');
+}
 // import * as serviceWorker from './serviceWorker';
 
 const { Sider, Content } = Layout;

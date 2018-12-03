@@ -109,6 +109,13 @@ module.exports = {
     devtool: shouldUseSourceMap ? 'source-map' : false,
     // In production, we only want to load the app code.
     entry: [paths.appIndexJs],
+    externals: {
+        antd: 'antd',
+        moment: 'moment',
+        '../moment': 'moment',
+        react: 'React',
+        'react-dom': 'ReactDOM',
+    },
     output: {
         // The build folder.
         path: paths.appBuild,
@@ -463,7 +470,7 @@ module.exports = {
         // Generate a manifest file which contains a mapping of all asset filenames
         // to their corresponding output file so that tools can pick it up without
         // having to parse `index.html`.
-        new ManifestPlugin({
+        false && new ManifestPlugin({
             fileName: 'asset-manifest.json',
             publicPath: publicPath,
         }),
@@ -472,10 +479,10 @@ module.exports = {
         // solution that requires the user to opt into importing specific locales.
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
         // You can remove this if you don't use Moment.js:
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        false && new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
         // Generate a service worker script that will precache, and keep up to date,
         // the HTML & assets that are part of the Webpack build.
-        new WorkboxWebpackPlugin.GenerateSW({
+        false && new WorkboxWebpackPlugin.GenerateSW({
             clientsClaim: true,
             exclude: [/\.map$/, /asset-manifest\.json$/],
             importWorkboxFrom: 'cdn',
