@@ -72,6 +72,7 @@ class LoginHandler(RequestHandler):
         self.finish({'success': True, 'msg': '退出成功'})
 
 
+
 class AuthBaseHandler(RequestHandler):
     bson = None
     offset = 0
@@ -90,7 +91,7 @@ class AuthBaseHandler(RequestHandler):
 
     def prepare(self):
         if self.request.method == 'GET':
-            start, size, self.keyword = [self.get_query_argument(key, None) for key in ("current", "size", "keyword")]
+            start, size, self.keyword = [self.get_query_argument(key, None) for key in ("start", "size", "keyword")]
             if size and size != '20' and size.isdigit():
                 self.size = int(size)
             if start and start != '1' and start.isdigit():
@@ -174,6 +175,8 @@ class ActivityHandler(AuthBaseHandler):
         if really_count < activity['total']:
             patch += [dict(type=_type, seq=seq + really_count, value=0, activity=activity_id, createTime=now, createUser=user,
                            startTime=activity['startTime'],  endTime=activity['endTime']) for seq in range(really_count, activity['total'])]
+        # 随机打乱顺序；
+        random.shuffle(patch)
         result = yield self.db.package.insert_many(patch, False)
         self.finish_bson(_id=activity_id, patch=result.inserted_ids, msg='红包活动创建成功')
 
@@ -193,12 +196,13 @@ class QrCodePageHandler(AuthBaseHandler):
         codes = yield cursor.to_list(length=None)
         for c in codes:
             c['img'] = '/admin/qrcode/%s/%s' % (c['_id'], crypt.qrcode_md5(c))
-        if total > size:
-            pages = range(0, int(math.ceil(total / size)))
-        else:
-            pages = None
-        self.render('admin/qrcode.html', activity=activity, codes=codes, pages=pages)
+        # if total > size:
+        #     pages = range(0, int(math.ceil(total / size)))
+        # else:
+        #     pages = None
+        # self.render('admin/qrcode.html', activity=activity, codes=codes, pages=pages)
         # self.finish({'success': True, 'msg': '获取二维码列表成功', 'urls': urls})
+        self.finish_bson(activity=activity, data=codes, total=total)
 
 
 class QRCodeHander(AuthBaseHandler):

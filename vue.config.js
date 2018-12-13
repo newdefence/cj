@@ -3,8 +3,8 @@ const path = require('path');
 // const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const pages = {
-    index: { entry: 'src/main.js', title: '...' },
-    // audit: { entry: 'src/pages/audit.js', filename: 'user/audit.html', title: 'FineChat - 审核' },
+    index: { entry: 'src/main.js', title: '后台系统' },
+    audit: { entry: 'src/pages/activity/qrcode.js', filename: 'activity/qrcode.html', title: '活动二维码详情' },
     // login: { entry: 'src/pages/login.js', title: '欢迎登录 FineChat 后台系统', chunks: ['chunk-vendors', 'login'] },
 };
 
@@ -37,10 +37,17 @@ module.exports = {
         };
     },
     devServer: {
+        index: 'index.html',
         contentBase: [__dirname, path.resolve(__dirname, '../')],
+        historyApiFallback: {
+            rewrites: [
+                { from: /^\/activity\/(\w+)\/qrcode\.html$/, to: 'activity/qrcode.html' },
+                { from: /^.*?\.html$/, to: 'index.html' },
+            ],
+        },
         proxy: {
             // '(?!\\.(js|html|png|jpg|svg|woff|ttf|woff2|map|ico|json))': { target: 'http://gateway' },
-            '^/admin': { target: 'http://gateway:8999', headers: { Host: 'xxx.com', Origin: 'http://localhost:8100' } },
+            '^/admin.*?(?!\\.html$)': { target: 'http://localhost:8999', headers: { Host: 'xxx.com', Origin: 'http://localhost:8100' } },
             '^/blog/.*?(?!\\.html$)': { target: 'http://xxx', headers: { Host: 'xxx.com', Origin: 'http://localhost:8100' } },
             // '/static': { target: 'http://gateway:8999' },
         },

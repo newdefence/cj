@@ -49,8 +49,8 @@ def main():
         (r'/qrcode/(\w+)/(\w+)', wx.QrCodeHandler),
         (r'/wx/post.json', wx.PostAddressHandler),
         (r'/admin/activity', admin.ActivityHandler),
-        (r'/admin/qrcode/(\w+)', admin.QrCodePageHandler), # 二维码图像列表页面
-        (r'/admin/qrcode/(\w+)/(\w+)', admin.QRCodeHander), # GET 单个二维码图像, id, seq, salt
+        (r'/admin/activity/(\w+)/qrcode', admin.QrCodePageHandler), # 二维码图像列表页面
+        (r'/admin/activity/(\w+)/qrcode/(\w+)', admin.QRCodeHander), # GET 单个二维码图像, id, seq, salt
         (r'/admin/login', admin.LoginHandler),
     ]
 
