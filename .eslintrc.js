@@ -1,9 +1,16 @@
-// https://eslint.org/docs/user-guide/configuring
-// https://github.com/yannickcr/eslint-plugin-react
-// https://github.com/prettier/eslint-config-prettier
-
 module.exports = {
-    extends: ['eslint:recommended', 'react-app'],
+    root: true,
+    env: {
+        node: true,
+    },
+    extends: [
+        'plugin:vue/essential',
+        '@vue/airbnb',
+    ],
+    globals: {
+        antd: true,
+        location: true,
+    },
     rules: {
         'comma-dangle': [2, {
             arrays: 'always-multiline',
@@ -13,10 +20,21 @@ module.exports = {
             functions: 'never',
         }],
         eqeqeq: [2, 'smart'],
+        'guard-for-in': 'off',
         indent: [2, 4],
-        'max-len': [1, { code: 240, ignoreUrls: true }],
-        'no-console': 0,
-        quotes: [2, 'single', { avoidEscape: true, allowTemplateLiterals: true }],
-        'react/jsx-max-props-per-line': [1, { maximum: 10, when: 'multiline' }]
-    }
+        'max-len': ['error', { code: 240, tabWidth: 4 }],
+        'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+        'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+        'no-nested-ternary': 'off',
+        'no-restricted-globals': 'off',
+        'no-param-reassign': 'off',
+        'no-script-url': 'off',
+        'object-curly-newline': 'off',
+        'one-var': 'off',
+        'one-var-declaration-per-line': 'off',
+        'prefer-destructuring': 'off',
+    },
+    parserOptions: {
+        parser: 'babel-eslint',
+    },
 };

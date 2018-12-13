@@ -2,39 +2,42 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title><%= htmlWebpackPlugin.options.title %></title>
-    <% if (process.env.NODE_ENV === 'production'){ %>
-    <link rel="stylesheet" href="/static/antd/antd.min.css">
+    <% if (webpackConfig.mode === 'production') { %>
+    <meta http-equiv="Cache-Control" content="no-cache,must-revalidate">
+    <% } %>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title><%= htmlWebpackPlugin.options.title || '后台系统' %></title>
+    <% if (webpackConfig.mode === 'development') { %>
+    <link href="/static/lib/ant-design-vue/antd.css" rel="stylesheet">
+    <% } %>
+    <% if (webpackConfig.mode === 'production') { %>
+    <link href="/static/lib/ant-design-vue/antd.min.css" rel="stylesheet">
     <% } %>
     <style>
-        .ant-form-item { margin-bottom: 10px; }
-        .ant-form-item-label, .ant-form-item-control { line-height: 2; }
-        .ant-input, .ant-input-number { height: 30px; }
-        .ant-input-number-input { height: 28px; }
-        .ant-table-thead > tr > th { padding: 10px 0; }
-        .ant-table-tbody > tr > td { padding: 6px 3px; }
+    .ant-form-item { margin-bottom: 10px; }
+    .ant-form-item-label, .ant-form-item-control { line-height: 2; }
+    .ant-input, .ant-input-number { height: 30px; }
+    .ant-input-number-input { height: 28px; }
+    .ant-table-thead > tr > th { padding: 10px 0; }
+    .ant-table-tbody > tr > td { padding: 6px 3px; }
     </style>
 </head>
 <body>
     <noscript>
-        You need to enable JavaScript to run this app.
+        <strong>请启用 Javascript！！！</strong>
     </noscript>
-    <div id="root"></div>
-    <% if (process.env.NODE_ENV === 'production'){ %>
-        <script src="/static/react~react-dom~axios.js"></script>
-        <script src="/static/antd~moment~moment_locale_zh-cn.js"></script>
+    <div id="app"></div>
+    <% if (webpackConfig.mode === 'development') { %>
+    <script src="/static/lib/vue/vue.js"></script>
+    <script src="/static/lib/vue-resource/vue-resource.js"></script>
+    <script src="/static/lib/vue-router/vue-router.js"></script>
+    <script src="/static/lib/moment/moment.js"></script>
+    <script src="/static/lib/ant-design-vue/antd.js"></script>
     <% } %>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <% if (webpackConfig.mode === 'production') { %>
+    .....
+    <% } %>
+    <script>Vue.use(antd);</script>
+    <!-- built files will be auto injected -->
 </body>
 </html>

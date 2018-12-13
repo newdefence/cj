@@ -49,3 +49,32 @@ mongo-express -a -u superuser -p password
 # For help on configuration options:
 mongo-express -h
 ```
+
+# 项目启动步骤：
+```bash
+# 1. 进入项目目录，启动数据库代理
+# 2. 启动 python 项目后台，启动**默认**端口
+python app.py
+# 3. 进入 web 项目
+cd static
+# 4.1 进入开发模式，直接打开 http://localhost:8080 即可访问
+yarn dev
+# 4.2 进入发版模式，构建完毕后需要 scp 的目录有 static/lib, static/dist
+yarn build
+```
+# nginx 配置
+在 sever 节点下添加 location 即可
+```conf
+location =/ {
+    rewrite / /static/dist/index.html;
+}
+# NOTE: ^~ 前缀匹配规则优先级高于 ~ 正则匹配优先级
+location ^~ /static/ {
+    root /opt/admin;
+}
+
+location ~ \.html$ {
+    try_files $uri /index.html;
+    root /opt/admin/static/dist; # eg. root /path1/; /a.html ==> /path1/a.html --> /path1/static/index.html
+}
+```
