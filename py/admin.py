@@ -13,11 +13,7 @@ import pymongo
 
 import qrcode
 
-try:
-    import settings_online as config
-except ImportError:
-    import settings_local as config
-
+import config
 import crypt
 
 __author__ = 'defence.zhang@gmail.com'

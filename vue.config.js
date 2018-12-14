@@ -47,9 +47,9 @@ module.exports = {
         },
         proxy: {
             // '(?!\\.(js|html|png|jpg|svg|woff|ttf|woff2|map|ico|json))': { target: 'http://gateway' },
-            '^/admin.*?(?!\\.html$)': { target: 'http://localhost:8999', headers: { Host: 'xxx.com', Origin: 'http://localhost:8100' } },
+            '^/admin.*?(?!\\.html$)': { target: 'http://localhost:8999' },
             '^/blog/.*?(?!\\.html$)': { target: 'http://xxx', headers: { Host: 'xxx.com', Origin: 'http://localhost:8100' } },
-            // '/static': { target: 'http://gateway:8999' },
+            '/static': { target: 'http://localhost:8999' },
         },
     },
 };
