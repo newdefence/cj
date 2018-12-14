@@ -21,9 +21,10 @@ define("debug", default=True, type=bool, help="server run mode")
 parse_command_line()
 
 try:
-    from py import settings_online as config
+    from py import config
 except ImportError:
-    from py import settings_local as config
+    print "please create py/config/%s.py and modify it correctly as py/config/simple.py ..." % ('local' if options.debug else 'online')
+    exit()
 
 from py import wx, admin
 

@@ -12,8 +12,8 @@ pip-log.txt
 *.log
 *.pyc
 
-settings_online.py
-settings_local.py
+py/config/online.py
+py/config/local.py
 
 # Sphinx documentation
 docs/_build/
