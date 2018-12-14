@@ -22,7 +22,7 @@
             :pagination="{ current: j1.start, pageSize: j1.size, total: j1.total, hideOnSinglePage: true }"
             @change="(pagination, filters, sorter)=> { loadJ1(pagination.current); }">
         <template slot="_id" slot-scope="_id">
-            <a target='_blank' :href="`/admin/activity/${_id.$oid}/qrcode.html`">查看二维码</a>
+            <a target='_blank' :href="`/activity/${_id.$oid}/qrcode.html`">查看二维码</a>
         </template>
         <template slot="startEndTime" slot-scope="row">{{ row.startTime | date }} ~ {{ row.endTime | date }}</template>
         <template slot="datetime" slot-scope="ts">{{ ts | datetime }}</template>
@@ -59,7 +59,7 @@ const Insert = antd.Form.create()({
                             random: count => ({ count }),
                         };
                         modal.loading = true;
-                        vm.$http.post('/admin/activity', {
+                        vm.$http.post('/activity', {
                             ...values,
                             startTime: dayStartTime(values.startTime),
                             endTime: dayEndTime(values.endTime),
@@ -251,7 +251,7 @@ export default {
             const vm = this;
             const { j1 } = vm;
             j1.loading = true;
-            vm.$http.get('/admin/activity', { params: generateParams(j1, '', start) }).then(({ body: data }) => {
+            vm.$http.get('/activity', { params: generateParams(j1, '', start) }).then(({ body: data }) => {
                 if (data.success) {
                     j1.total = data.total || 0;
                     j1.data = data.data;

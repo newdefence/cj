@@ -26,14 +26,15 @@ except ImportError:
     print "please create py/config/%s.py and modify it correctly as py/config/simple.py ..." % ('local' if options.debug else 'online')
     exit()
 
-from py import wx, admin
+from py import wx
+from py.admin import activity, login
 
 
-class IndexHandler(RequestHandler):
+class TestHandler(RequestHandler):
     def get(self):
-        # TODO: cp build/index.html ==> templates/admin/index.html
-        self.render('admin/index.html')
-
+        page = self.get_query_argument('page')
+        value = int(self.get_query_argument('value'))
+        self.render('wx/%s.html' % page, package={'value': value})
 
 def main():
     settings = dict(
@@ -45,15 +46,20 @@ def main():
         autoescape=None
     )
     handlers = [
-        (r'/admin', IndexHandler),
-        (r'/wx/cj.html', wx.QrCodeHandler),
+        # (r'/wx/cj.html', wx.QrCodeHandler),
         (r'/qrcode/(\w+)/(\w+)', wx.QrCodeHandler),
         (r'/wx/post.json', wx.PostAddressHandler),
-        (r'/admin/activity', admin.ActivityHandler),
-        (r'/admin/activity/(\w+)/qrcode', admin.QrCodePageHandler), # 二维码图像列表页面
-        (r'/admin/activity/(\w+)/qrcode/(\w+)', admin.QRCodeHander), # GET 单个二维码图像, id, seq, salt
-        (r'/admin/login', admin.LoginHandler),
+        # 后台接口
+        (r'/activity', activity.ActivityHandler),
+        (r'/activity/(\w+)/qrcode', activity.QrCodePageHandler), # 二维码图像列表页面
+        (r'/activity/(\w+)/qrcode/(\w+)', activity.QRCodeHander), # GET 单个二维码图像, id, seq, salt
+        (r'/login', login.LoginHandler),
     ]
+    if options.debug:
+        handlers += [
+            (r'/test.html', TestHandler),
+        ]
+
 
     application = Application(handlers, **settings)
     # Forks one process per CPU.

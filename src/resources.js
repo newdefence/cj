@@ -7,7 +7,7 @@ export default [
 ];
 
 export const SIDER_MENUS = [
-    { icon: 'home', path: '/', name: '首页' },
+    { icon: 'home', path: '/', alias: '/index.html', name: '首页' },
     {
         icon: 'video-camera',
         path: '/activity/',

@@ -1,0 +1,17 @@
+body { margin: 0; font-size: 0; background: #f3f3f3; }
+a { text-decoration: none; }
+a:active, a:hover { outline: 0; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+.clearfix::before, .clearfix::after { display: table; content: ""; }
+.clearfix::after { clear: both; }
+.hide, [v-cloak] { display: none !important; }
+.nowrap { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; word-break: break-all; }
+main { display: block; max-width: 750px; margin: 0 auto; }
+header { padding-left: 20px; font-size: 16px; line-height: 44px; color: #fff; background: #fd963f; }
+.main { padding: 0 0 10px; background: #fce827 url(/static/wx/bg.png) 0 0 no-repeat; background-size: 100%; }
+/* 页面主体区域 */
+/* 规则说明区域 */
+.rules { padding: 10px 0 10px 12px; margin: 10px; border-radius: 10px; font-size: 14px; color: #fff; background: #fd963f; }
+.rules h3 { margin: 0; font-size: 18px; line-height: 1.5; text-align: center; }
+.rules > div { margin: 10px 0; }
+.rules p { margin: 0 0 0 20px; }
+.copyright { font-size: 14px; line-height: 50px; text-align: center; color: #777; }

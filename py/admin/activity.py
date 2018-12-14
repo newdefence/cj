@@ -13,8 +13,8 @@ import pymongo
 
 import qrcode
 
-import config
-import crypt
+import py.config as config
+import py.crypt as crypt
 
 __author__ = 'defence.zhang@gmail.com'
 __date__ = "2018/11/20 下午9:50:00"
@@ -191,7 +191,7 @@ class QrCodePageHandler(AuthBaseHandler):
         cursor.limit(size)
         codes = yield cursor.to_list(length=None)
         for c in codes:
-            c['img'] = '/admin/qrcode/%s/%s' % (c['_id'], crypt.qrcode_md5(c))
+            c['img'] = '/activity/%s/qrcode/%s?user=%s' % (activity_id, c['_id'], c['createUser'])
         # if total > size:
         #     pages = range(0, int(math.ceil(total / size)))
         # else:
@@ -204,11 +204,13 @@ class QrCodePageHandler(AuthBaseHandler):
 class QRCodeHander(AuthBaseHandler):
     # @coroutine
     # @authenticated
-    def get(self, package_id, salt):
+    def get(self, activity_id, package_id):
         """
-        /admin/qrcode 返回数据列表 { urls: [ '', '', '', '' ] }
-        /admin/qrcode/activity/seq 返回二维码图片，二维码地址：http://host/qrcode/activity/seq/secret
+        /qrcode 返回数据列表 { urls: [ '', '', '', '' ] }
+        /qrcode/activity/seq 返回二维码图片，二维码地址：http://host/qrcode/activity/seq/secret
         """
+        user = self.get_query_argument('user')
+        salt = crypt.qrcode_md5(dict(_id=package_id, activity=activity_id, createUser=user))
         self.set_header("Content-Type", "image/png")
         img = qrcode.make("http://%s/qrcode/%s/%s" % (config.QrCodeHost, package_id, salt))
         img.save(self, "png")

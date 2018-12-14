@@ -1,10 +1,10 @@
 /*!
- * 
+ *
  * antd v1.1.2
- * 
+ *
  * Copyright 2017-present, ant-design-vue.
  * All rights reserved.
- *       
+ *
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -70751,4 +70751,3 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ })
 /******/ ]);
 });
-//# sourceMappingURL=antd.js.map

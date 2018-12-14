@@ -1,15 +1,58 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-        <meta name="format-detection" content="telephone=no" />
-        <title>实物中奖</title>
-    </head>
-    <body>
-        <main style="max-width: 750px; margin: 0 auto;">
-            <h1>{{ package['value'] }}</h1>
-            实物红包页面待开发
-        </main>
-    </body>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>{{ '红包中奖' if package['value'] else '谢谢参与' }}</title>
+    <style>{% include base.css %}</style>
+    <style>
+        .hb {
+            width: 320px; height: 230px; padding: 80px 0 0; margin: 20px auto 0;
+            background: url(/static/wx/goods/award_bg.png) 0 0 no-repeat; background-size: 100%;
+        }
+        .hb .gift { display: flex; height: 170px; align-items: center; justify-content: center; }
+        .hb .gift img { max-width: 180px; max-height: 160px; }
+        .hb a {
+            display: block; width: 144px; height: 30px; margin: 10px auto 0;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.28); border-radius: 22px;
+            font-size: 18px; line-height: 32px; text-align: center; color: yellow;
+            background: #ff0030;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <header>XXXX（抽奖平台）</header>
+    <div class="main">
+        <img src="/static/wx/goods/more_banner.png" alt="扫码送红包" style="width: 100%;" />
+        <div class="hb">
+            {% if package['value'] %}
+            <div class="gift">
+                <img src="/static/wx/goods/activity_one_more_3.jpg">
+            </div>
+            <a href="javascript:">立即领取</a>
+            {% else %}
+            <h3>谢谢参与</h3>
+            {% end %}
+        </div>
+        <div class="rules">
+            <h3>活动说明</h3>
+            <div>
+                ① 活动有效期
+                <p>2017年8月21日-2018年8月21日</p>
+            </div>
+            <div>
+                ② 活动主办方
+                <p>正猫一物一码</p>
+            </div>
+            <div>
+                ③ 活动声明
+                <p>本活动最终解释权归活动发行方所有。</p>
+            </div>
+        </div>
+    </div>
+    <div class="copyright">&copy; 2018 我的网址</div>
+</main>
+</body>
 </html>

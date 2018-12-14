@@ -1,10 +1,10 @@
 /*!
- * 
+ *
  * antd v1.1.2
- * 
+ *
  * Copyright 2017-present, ant-design-vue.
  * All rights reserved.
- *       
+ *
  */
 /* stylelint-disable at-rule-empty-line-before,at-rule-name-space-after,at-rule-no-unknown */
 /* stylelint-disable no-duplicate-selectors */
@@ -21546,5 +21546,3 @@ li.ant-tree-treenode-disabled > .ant-tree-node-content-wrapper:hover {
     opacity: 0;
   }
 }
-
-/*# sourceMappingURL=antd.css.map*/
