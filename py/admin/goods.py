@@ -20,15 +20,24 @@ class GoodsHandler(AuthBaseHandler):
     @authenticated
     def get(self, *args, **kwargs):
         # where = filter
-        _aid, where = self.get_query_argument('activity_id', None), None
+        _aid, _match = self.get_query_argument('activity_id', None), {}
         if _aid:
-            where = {'activity': ObjectId(_aid)}
-        total = yield self.db.goods.count_documents(where or {})
-        cursor = self.db.goods.aggregate(filter(bool, []))
+            _match = {'activity': ObjectId(_aid)}
+        total = yield self.db.goods.count_documents(_match)
+        cursor = self.db.goods.aggregate([v for (b, v) in [
+            (_match, {'$match': _match}),
+            (self.offset, {'$skip', self.offset}),
+            (1, {'$limit': self.size}),
+            (1, {'$lookup': {'from': 'activity', 'localField': 'activity', 'foreignField': '_id', 'as': '_activityList'}}),
+            # (1, {'$replaceRoot': {'newRoot': {'$mergeObjects': [{'$arrayElemAt': ['$activity0', 0]}, '$$ROOT']}}}),
+            # (1, {'$project': {'activity': {'$replaceRoot': {'newRoot': {'activityName': {'$arrayElemAt': ['$activity0',0]}}} }}}),
+            (1, {'$project': {'activity': {'$arrayElemAt': ['_activityList', 0]}, '_id': 1, 'name': 1, '...otherFieldTypes': 1}}),
 
-        if self.offset:
-            cursor.skip(self.offset)
-        cursor.limit(self.size)
+        ] if b])
+
+        # if self.offset:
+        #     cursor.skip(self.offset)
+        # cursor.limit(self.size)
         data = yield cursor.to_list(length=None)
         self.finish_bson(total=total, data=data)
 
