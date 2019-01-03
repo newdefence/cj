@@ -19,6 +19,13 @@
             font-size: 18px; line-height: 32px; text-align: center; color: yellow;
             background: #ff0030;
         }
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.32); }
+        form { position: absolute; top: 40px; left: 50%; width: 280px; padding: 30px 15px; margin-left: -155px; background: #fff; border-radius: 10px; }
+        form .item { margin: 10px 0; }
+        form label { display: inline-block; width: 80px; font-size: 14px; width: 5em; line-height: 26px; vertical-align: top; }
+        form input { height: 26px; padding: 0 0 0 5px; }
+        form textarea { height: 52px; }
+        form input, form textarea { box-sizing: border-box; width: 200px; font-size: 14px; border: 1px #eee solid; }
     </style>
 </head>
 <body>
@@ -53,6 +60,26 @@
         </div>
     </div>
     <div class="copyright">&copy; 2018 我的网址</div>
+    <div class="modal">
+        <form action="/">
+            <div class="item">
+                <label for="txtName">姓名：</label>
+                <input type="text" placeholder="请输入收货人姓名"/>
+            </div>
+            <div class="item">
+                <label for="txtName">电话：</label>
+                <input type="text" placeholder="请输入收货联系人电话"/>
+            </div>
+            <div class="item">
+                <label for="txtName">详细地址：</label>
+                <textarea type="text" placeholder="请填写收货详细地址：XX 省 XX 市 XX 街道" rows="2"></textarea>
+            </div>
+            <div class="item">
+                <label for="txtName">邮政编码：</label>
+                <input type="text" placeholder="请输入6位邮政编码"/>
+            </div>
+        </form>
+    </div>
 </main>
 </body>
 </html>

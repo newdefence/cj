@@ -32,6 +32,7 @@ class GoodsHandler(AuthBaseHandler):
             # (1, {'$replaceRoot': {'newRoot': {'$mergeObjects': [{'$arrayElemAt': ['$activity0', 0]}, '$$ROOT']}}}),
             # (1, {'$project': {'activity': {'$replaceRoot': {'newRoot': {'activityName': {'$arrayElemAt': ['$activity0',0]}}} }}}),
             (1, {'$project': {'activity': {'$arrayElemAt': ['_activityList', 0]}, '_id': 1, 'name': 1, '...otherFieldTypes': 1}}),
+            (1, {'$project': {'activity._id': 1, 'activity.name': 1}}),
 
         ] if b])
 
