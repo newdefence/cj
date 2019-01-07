@@ -23,9 +23,10 @@
         form { position: absolute; top: 40px; left: 50%; width: 280px; padding: 30px 15px; margin-left: -155px; background: #fff; border-radius: 10px; }
         form .item { margin: 10px 0; }
         form label { display: inline-block; width: 80px; font-size: 14px; width: 5em; line-height: 26px; vertical-align: top; }
-        form input { height: 26px; padding: 0 0 0 5px; }
+        form input[type=text] { height: 26px; padding: 0 0 0 5px; }
         form textarea { height: 52px; }
-        form input, form textarea { box-sizing: border-box; width: 200px; font-size: 14px; border: 1px #eee solid; }
+        form input[type=text], form textarea { box-sizing: border-box; width: 200px; font-size: 14px; border: 1px #eee solid; }
+
     </style>
 </head>
 <body>
@@ -62,6 +63,7 @@
     <div class="copyright">&copy; 2018 我的网址</div>
     <div class="modal">
         <form action="/">
+            <a href="javascript:" @click="m1.show = false;">X</a>
             <div class="item">
                 <label for="txtName">姓名：</label>
                 <input type="text" placeholder="请输入收货人姓名"/>
@@ -78,8 +80,18 @@
                 <label for="txtName">邮政编码：</label>
                 <input type="text" placeholder="请输入6位邮政编码"/>
             </div>
+            <div class="item">
+                <input type="button" value="保存" @click="save"/>
+            </div>
         </form>
     </div>
 </main>
+{% if handler.application.settings['debug'] %}
+<script src="/static/lib/vue/vue.js"></script>
+<script src="/static/lib/vue-resource/vue-resource.js"></script>
+{% else %}
+<script src="/static/lib/vue/vue.min.js"></script>
+<script src="/static/lib/vue-resource/vue-resource.min.js"></script>
+{% end %}
 </body>
 </html>
