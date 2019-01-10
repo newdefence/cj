@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
     <meta name="format-detection" content="telephone=no" />
     <title>{{ '红包中奖' if package['value'] else '谢谢参与' }}</title>
+    <link rel="stylesheet" href="/static/lib/weui/weui.css">
     <style>{% include base.css %}</style>
     <style>
         .hb {
@@ -19,14 +20,16 @@
             font-size: 18px; line-height: 32px; text-align: center; color: yellow;
             background: #ff0030;
         }
-        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.32); }
+        /* .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.32); }
         form { position: absolute; top: 40px; left: 50%; width: 280px; padding: 30px 15px; margin-left: -155px; background: #fff; border-radius: 10px; }
         form .item { margin: 10px 0; }
         form label { display: inline-block; width: 80px; font-size: 14px; width: 5em; line-height: 26px; vertical-align: top; }
         form input[type=text] { height: 26px; padding: 0 0 0 5px; }
         form textarea { height: 52px; }
-        form input[type=text], form textarea { box-sizing: border-box; width: 200px; font-size: 14px; border: 1px #eee solid; }
-
+        form input[type=text], form textarea { box-sizing: border-box; width: 200px; font-size: 14px; border: 1px #eee solid; } */
+        .weui-dialog { font-size: 13px; }
+        .weui-cells_form { margin-top: 0; font-size: 15px; }
+        .weui-label { width: 90px; text-align: left; }
     </style>
 </head>
 <body>
@@ -61,29 +64,44 @@
         </div>
     </div>
     <div class="copyright">&copy; 2018 我的网址</div>
-    <div class="modal">
-        <form action="/">
-            <a href="javascript:" @click="m1.show = false;">X</a>
-            <div class="item">
-                <label for="txtName">姓名：</label>
-                <input type="text" placeholder="请输入收货人姓名"/>
+    <div v-show="showAddress" v-cloak>
+        <div class="weui-mask"></div>
+        <div class="weui-dialog">
+            <div class="weui-dialog__hd">
+                <strong class="weui-dialog__title">收货信息</strong>
             </div>
-            <div class="item">
-                <label for="txtName">电话：</label>
-                <input type="text" placeholder="请输入收货联系人电话"/>
+            <div class="weui-dialog__bd" style="padding-left: 0; padding-right: 0;">
+                <form action="/" class="weui-cells weui-cells_form">
+                    <div class="weui-cell">
+                        <div class="weui-cell__hd"><label class="weui-label">姓名：</label></div>
+                        <div class="weui-cell__bd">
+                            <input class="weui-input" type="text" placeholder="请输入收货人姓名" v-model="j1.name"/>
+                        </div>
+                    </div>
+                    <div class="weui-cell">
+                        <div class="weui-cell__hd"><label class="weui-label">电话：</label></div>
+                        <div class="weui-cell__bd">
+                            <input class="weui-input" placeholder="请输入收货联系人电话" v-model="j1.phone">
+                        </div>
+                    </div>
+                    <div class="weui-cell">
+                        <div class="weui-cell__hd"><label class="weui-label">详细地址：</label></div>
+                        <div class="weui-cell__bd">
+                            <textarea class="weui-textarea" placeholder="请填写收货详细地址：XX 省 XX 市 XX 街道" rows="2" v-model="j1.address"></textarea>
+                        </div>
+                    </div>
+                    <div class="weui-cell">
+                        <div class="weui-cell__hd"><label class="weui-label">邮政编码：</label></div>
+                        <div class="weui-cell__bd">
+                            <input class="weui-input" placeholder="请输入6位邮政编码" v-model="j1.code">
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="item">
-                <label for="txtName">详细地址：</label>
-                <textarea type="text" placeholder="请填写收货详细地址：XX 省 XX 市 XX 街道" rows="2"></textarea>
+            <div class="weui-dialog__ft">
+                <a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" @click="save">确定</a>
             </div>
-            <div class="item">
-                <label for="txtName">邮政编码：</label>
-                <input type="text" placeholder="请输入6位邮政编码"/>
-            </div>
-            <div class="item">
-                <input type="button" value="保存" @click="save"/>
-            </div>
-        </form>
+        </div>
     </div>
 </main>
 {% if handler.application.settings['debug'] %}
@@ -93,5 +111,19 @@
 <script src="/static/lib/vue/vue.min.js"></script>
 <script src="/static/lib/vue-resource/vue-resource.min.js"></script>
 {% end %}
+<script>
+    var app = new Vue({
+        el: 'main',
+        data: {
+            showAddress: false,
+            j1: {},
+        },
+        methods: {
+            save: function() {
+                // todo.
+            },
+        },
+    });
+</script>
 </body>
 </html>

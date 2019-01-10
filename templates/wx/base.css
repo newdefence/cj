@@ -1,4 +1,4 @@
-body { margin: 0; font-size: 0; background: #f3f3f3; }
+body { margin: 0; /* font-size: 0; */ background: #f3f3f3; }
 a { text-decoration: none; }
 a:active, a:hover { outline: 0; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 .clearfix::before, .clearfix::after { display: table; content: ""; }
