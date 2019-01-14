@@ -42,7 +42,7 @@
             <div class="gift">
                 <img src="/static/wx/goods/activity_one_more_3.jpg">
             </div>
-            <a href="javascript:">立即领取</a>
+            <a href="javascript:" @click="showAddress = true;">立即领取</a>
             {% else %}
             <h3>谢谢参与</h3>
             {% end %}
@@ -111,6 +111,7 @@
 <script src="/static/lib/vue/vue.min.js"></script>
 <script src="/static/lib/vue-resource/vue-resource.min.js"></script>
 {% end %}
+<script src="//res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
 <script>
     var app = new Vue({
         el: 'main',
